@@ -1,0 +1,37 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Maven build
+target/
+
+# Gradle build
+build/
+.gradle/
+
+# Compiled classes
+*.class
+out/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Upload temp
+uploads/

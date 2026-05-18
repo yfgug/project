@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧校园 - 宿舍水电费管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body { margin: 0; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); font-family: 'Noto Sans SC', "Microsoft YaHei", sans-serif; height: 100vh; overflow: hidden; color: #333; }
+        #app { display: flex; height: 100vh; padding: 20px; box-sizing: border-box; gap: 20px; }
+        .glass-card { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); overflow: hidden; }
+        .sidebar { width: 240px; display: flex; flex-direction: column; padding: 0; transition: all 0.3s ease; }
+        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); }
+        .logo-area i { font-size: 32px; color: #409EFF; margin-bottom: 10px; }
+        .logo-area h2 { margin: 0; font-size: 18px; font-weight: 700; color: #2c3e50; letter-spacing: 1px; }
+        .el-menu { background: transparent !important; border-right: none !important; }
+        .el-submenu__title, .el-menu-item { color: #505c6a !important; font-weight: 500; border-radius: 10px; margin: 4px 10px; }
+        .el-menu-item:hover, .el-submenu__title:hover { background: rgba(255,255,255,0.8) !important; color: #409EFF !important; }
+        .el-menu-item.is-active { background: #409EFF !important; color: #fff !important; box-shadow: 0 4px 12px rgba(64,158,255,0.3); }
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; gap: 20px; overflow: hidden; }
+        .top-header { height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; flex-shrink: 0; }
+        .welcome-text { font-size: 20px; font-weight: bold; color: #2c3e50; }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .content-area { flex: 1; overflow-y: auto; padding-right: 10px; padding-bottom: 20px; }
+        .content-area::-webkit-scrollbar { width: 6px; }
+        .content-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+        .utility-section { padding: 25px; }
+        .section-header { font-size: 18px; font-weight: bold; color: #34495e; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .section-header i { color: #409EFF; font-size: 22px; }
+        .el-table { background: transparent !important; border-radius: 10px; overflow: hidden; }
+        .el-table th, .el-table tr { background-color: rgba(255,255,255,0.4) !important; }
+        .el-table--striped .el-table__body tr.el-table__row--striped td { background: rgba(255,255,255,0.6) !important; }
+        .el-table td, .el-table th.is-leaf { border-bottom: 1px solid rgba(255,255,255,0.5) !important; }
+        .el-table--border, .el-table--group { border: 1px solid rgba(255,255,255,0.5) !important; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="sidebar glass-card">
+        <div class="logo-area">
+            <i class="el-icon-school"></i>
+            <h2>智慧校园管理</h2>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Business Platform v2.0</div>
+        </div>
+        <el-menu default-active="4-2" class="el-menu-vertical-demo" :unique-opened="true">
+            <el-submenu index="2">
+                <template slot="title"><i class="el-icon-user"></i><span>人员信息管理</span></template>
+                <el-menu-item index="2-1" @click="goTo('student.html')">学生管理</el-menu-item>
+            </el-submenu>
+            <el-submenu index="3">
+                <template slot="title"><i class="el-icon-office-building"></i><span>宿舍与报修</span></template>
+                <el-menu-item index="3-2" @click="goTo('repair.html')">宿舍报修处理</el-menu-item>
+            </el-submenu>
+            <el-submenu index="4">
+                <template slot="title"><i class="el-icon-data-line"></i><span>考勤与水电</span></template>
+                <el-menu-item index="4-1" @click="goTo('inspection.html')">查寝与违纪</el-menu-item>
+                <el-menu-item index="4-2" @click="goTo('utility.html')">宿舍水电费</el-menu-item>
+            </el-submenu>
+            <el-menu-item index="5" @click="goTo('notice.html')">
+                <i class="el-icon-chat-dot-square"></i><span slot="title">系统公告发布</span>
+            </el-menu-item>
+        </el-menu>
+    </div>
+    <div class="main-wrapper">
+        <div class="top-header glass-card">
+            <div class="welcome-text">宿舍水电费账单管理</div>
+            <div class="user-profile">
+                <span style="font-size: 14px; color: #555;">当前身份：
+                    <el-tag size="medium" :type="role === 'admin' ? 'danger' : 'success'" effect="light" style="border-radius: 20px;">
+                        <i :class="role === 'admin' ? 'el-icon-s-custom' : 'el-icon-user'"></i>
+                        {{ role === 'admin' ? '系统管理员' : '普通学生' }}
+                    </el-tag>
+                </span>
+                <el-button type="danger" size="small" round plain @click="logout" icon="el-icon-switch-button">退出</el-button>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="utility-section glass-card">
+                <div class="section-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="el-icon-wallet"></i> 每月水电费账单管理
+                    </div>
+                    <el-button v-if="role === 'admin'" type="success" round icon="el-icon-money" @click="sendReminder">一键催缴</el-button>
+                </div>
+                <el-table :data="tableData" border stripe style="width: 100%;">
+                    <el-table-column prop="month" label="账单月份" width="120" align="center"></el-table-column>
+                    <el-table-column prop="dormId" label="宿舍号" width="120" align="center"></el-table-column>
+                    <el-table-column prop="water" label="本月用水(吨)" width="120" align="center"></el-table-column>
+                    <el-table-column prop="electric" label="本月用电(度)" width="120" align="center"></el-table-column>
+                    <el-table-column prop="total" label="应缴合计(元)" width="120" align="center"></el-table-column>
+                    <el-table-column prop="status" label="缴费状态" align="center">
+                        <template slot-scope="scope">
+                            <el-tag :type="scope.row.status === '已结清' ? 'success' : 'danger'" effect="dark">{{ scope.row.status }}</el-tag>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        role: '',
+        tableData: [
+            { month: '2026年3月', dormId: '16栋B-113', water: 12.5, electric: 145, total: '¥ 110.50', status: '已结清' },
+            { month: '2026年3月', dormId: '25栋510', water: 18.2, electric: 210, total: '¥ 168.00', status: '欠费停电' },
+            { month: '2026年3月', dormId: '7栋C-403', water: 9.0, electric: 80, total: '¥ 62.00', status: '已结清' },
+            { month: '2026年3月', dormId: '19栋B-301', water: 15.0, electric: 190, total: '¥ 145.00', status: '待缴费' }
+        ]
+    },
+    mounted() { this.role = localStorage.getItem('userRole') || 'student'; },
+    methods: {
+        goTo(url) { location.href = url; },
+        logout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('username');
+            this.$message.success('已安全退出');
+            setTimeout(() => { location.href = 'login.html'; }, 800);
+        },
+        sendReminder() {
+            const count = this.tableData.filter(item => item.status !== '已结清').length;
+            this.$message.success('已向 ' + count + ' 个欠费宿舍发送催缴短信');
+        }
+    }
+});
+</script>
+</body>
+</html>

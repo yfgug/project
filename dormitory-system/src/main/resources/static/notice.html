@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧校园 - 系统公告发布</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            color: #333;
+        }
+
+        #app {
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+        }
+
+        .sidebar {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .logo-area {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-area i {
+            font-size: 32px;
+            color: #409EFF;
+            margin-bottom: 10px;
+        }
+
+        .logo-area h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .el-menu {
+            background: transparent !important;
+            border-right: none !important;
+        }
+
+        .el-submenu__title,
+        .el-menu-item {
+            color: #505c6a !important;
+            font-weight: 500;
+            border-radius: 10px;
+            margin: 4px 10px;
+        }
+
+        .el-menu-item:hover,
+        .el-submenu__title:hover {
+            background: rgba(255, 255, 255, 0.8) !important;
+            color: #409EFF !important;
+        }
+
+        .el-menu-item.is-active {
+            background: #409EFF !important;
+            color: #fff !important;
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .top-header {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .welcome-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            padding-bottom: 20px;
+        }
+
+        .content-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        .notice-section {
+            padding: 25px;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .el-table {
+            background: transparent !important;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .el-table th,
+        .el-table tr {
+            background-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        .el-table--striped .el-table__body tr.el-table__row--striped td {
+            background: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .el-table td,
+        .el-table th.is-leaf {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .notice-content {
+            max-height: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 10px;
+        }
+
+        .el-dialog {
+            border-radius: 16px !important;
+            overflow: hidden;
+        }
+
+        @media (max-width: 900px) {
+            #app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .top-header {
+                height: auto;
+                padding: 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="sidebar glass-card">
+        <div class="logo-area">
+            <i class="el-icon-school"></i>
+            <h2>智慧校园管理</h2>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Business Platform v2.0</div>
+        </div>
+
+        <el-menu default-active="5" :unique-opened="true">
+            <el-submenu index="2">
+                <template slot="title"><i class="el-icon-user"></i><span>人员信息管理</span></template>
+                <el-menu-item index="2-1" @click="goTo('student.html')">学生管理</el-menu-item>
+            </el-submenu>
+
+            <el-submenu index="3">
+                <template slot="title"><i class="el-icon-office-building"></i><span>宿舍与报修</span></template>
+                <el-menu-item index="3-2" @click="goTo('repair.html')">宿舍报修处理</el-menu-item>
+            </el-submenu>
+
+            <el-submenu index="4">
+                <template slot="title"><i class="el-icon-data-line"></i><span>考勤与水电</span></template>
+                <el-menu-item index="4-1" @click="goTo('inspection.html')">查寝与违纪</el-menu-item>
+                <el-menu-item index="4-2" @click="goTo('utility.html')">宿舍水电费</el-menu-item>
+            </el-submenu>
+
+            <el-menu-item index="5" @click="goTo('notice.html')">
+                <i class="el-icon-chat-dot-square"></i>
+                <span slot="title">系统公告发布</span>
+            </el-menu-item>
+        </el-menu>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="top-header glass-card">
+            <div class="welcome-text">系统公告发布管理</div>
+            <div class="user-profile">
+                <span style="font-size: 14px; color: #555;">
+                    当前身份：
+                    <el-tag size="medium" :type="role === 'admin' ? 'danger' : 'success'" effect="light" style="border-radius: 20px;">
+                        <i :class="role === 'admin' ? 'el-icon-s-custom' : 'el-icon-user'"></i>
+                        {{ role === 'admin' ? '系统管理员' : '普通学生' }}
+                    </el-tag>
+                </span>
+                <el-button type="danger" size="small" round plain @click="logout" icon="el-icon-switch-button">退出</el-button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="notice-section glass-card">
+                <div class="section-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="el-icon-chat-dot-square"></i>
+                        <span>系统公告列表</span>
+                    </div>
+                    <div v-if="role === 'admin'">
+                        <el-button type="primary" round icon="el-icon-plus" @click="handleAdd">发布新公告</el-button>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <el-input
+                                v-model="searchKeyword"
+                                placeholder="按标题、发布人、内容搜索"
+                                prefix-icon="el-icon-search"
+                                style="width: 300px;"
+                                clearable
+                                @clear="handleSearch"
+                                @keyup.enter.native="handleSearch">
+                        </el-input>
+                        <el-button type="primary" round @click="handleSearch">搜索</el-button>
+                    </div>
+                    <el-button type="default" round icon="el-icon-refresh-right" @click="refreshData">刷新列表</el-button>
+                </div>
+
+                <el-table
+                        :data="pagedData"
+                        border
+                        stripe
+                        style="width: 100%;"
+                        v-loading="loading">
+                    <el-table-column label="序号" width="70" align="center">
+                        <template slot-scope="scope">
+                            {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="title" label="公告标题" width="200"></el-table-column>
+                    <el-table-column prop="publisher" label="发布人" width="120" align="center"></el-table-column>
+                    <el-table-column prop="content" label="公告内容">
+                        <template slot-scope="scope">
+                            <div class="notice-content">{{ scope.row.content }}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="publishDate" label="发布时间" width="180" align="center"></el-table-column>
+                    <el-table-column label="操作" width="180" align="center" v-if="role === 'admin'">
+                        <template slot-scope="scope">
+                            <div class="action-buttons">
+                                <el-button type="primary" size="mini" @click="handleEdit(scope.row)" icon="el-icon-edit">编辑</el-button>
+                                <el-button type="danger" size="mini" @click="handleDelete(scope.row.id)" icon="el-icon-delete">删除</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <div class="pagination-container">
+                    <el-pagination
+                            background
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page="currentPage"
+                            :page-sizes="[8, 12, 20, 30]"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="filteredTotal">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="600px" @close="resetForm">
+        <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+            <el-form-item label="公告标题" prop="title">
+                <el-input v-model="form.title" placeholder="请输入公告标题" maxlength="100"></el-input>
+            </el-form-item>
+
+            <el-form-item label="发布人" prop="publisher">
+                <el-input v-model="form.publisher" placeholder="请输入发布人姓名" maxlength="50"></el-input>
+            </el-form-item>
+
+            <el-form-item label="公告内容" prop="content">
+                <el-input
+                        type="textarea"
+                        v-model="form.content"
+                        placeholder="请输入公告内容"
+                        :rows="6"
+                        maxlength="1000"
+                        show-word-limit>
+                </el-input>
+            </el-form-item>
+
+            <el-form-item label="发布时间" prop="publishDate">
+                <el-date-picker
+                        v-model="form.publishDate"
+                        type="datetime"
+                        placeholder="选择发布时间"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        style="width: 100%;">
+                </el-date-picker>
+            </el-form-item>
+
+            <el-form-item label="图片链接" prop="photoUrl">
+                <el-input v-model="form.photoUrl" placeholder="请输入图片 URL，可为空"></el-input>
+            </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitForm" :loading="submitting">确定</el-button>
+        </span>
+    </el-dialog>
+</div>
+
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            role: '',
+            noticeList: [],
+            loading: false,
+            dialogVisible: false,
+            dialogTitle: '发布新公告',
+            submitting: false,
+            form: {
+                id: null,
+                title: '',
+                publisher: '',
+                content: '',
+                publishDate: '',
+                photoUrl: ''
+            },
+            rules: {
+                title: [
+                    { required: true, message: '请输入公告标题', trigger: 'blur' },
+                    { min: 2, max: 100, message: '长度应为 2 到 100 个字符', trigger: 'blur' }
+                ],
+                publisher: [
+                    { required: true, message: '请输入发布人', trigger: 'blur' },
+                    { min: 2, max: 50, message: '长度应为 2 到 50 个字符', trigger: 'blur' }
+                ],
+                content: [
+                    { required: true, message: '请输入公告内容', trigger: 'blur' },
+                    { min: 10, max: 1000, message: '长度应为 10 到 1000 个字符', trigger: 'blur' }
+                ],
+                publishDate: [
+                    { required: true, message: '请选择发布时间', trigger: 'change' }
+                ]
+            },
+            searchKeyword: '',
+            currentPage: 1,
+            pageSize: 10
+        },
+        computed: {
+            filteredData() {
+                if (!this.searchKeyword.trim()) {
+                    return this.noticeList;
+                }
+                const keyword = this.searchKeyword.trim().toLowerCase();
+                return this.noticeList.filter(item =>
+                    (item.title && item.title.toLowerCase().includes(keyword)) ||
+                    (item.publisher && item.publisher.toLowerCase().includes(keyword)) ||
+                    (item.content && item.content.toLowerCase().includes(keyword))
+                );
+            },
+            filteredTotal() {
+                return this.filteredData.length;
+            },
+            pagedData() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.filteredData.slice(start, start + this.pageSize);
+            }
+        },
+        watch: {
+            searchKeyword() {
+                this.currentPage = 1;
+            }
+        },
+        mounted() {
+            this.role = localStorage.getItem('userRole') || 'student';
+            this.loadNotices();
+        },
+        methods: {
+            goTo(url) {
+                location.href = url;
+            },
+            logout() {
+                localStorage.removeItem('userRole');
+                this.$message.success('已安全退出');
+                setTimeout(() => {
+                    location.href = 'login.html';
+                }, 800);
+            },
+            loadNotices() {
+                this.loading = true;
+                axios.get('/api/notice/list')
+                    .then(response => {
+                        if (response.data.code === 200) {
+                            this.noticeList = response.data.data || [];
+                        } else {
+                            this.$message.error('加载公告列表失败：' + response.data.msg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('加载公告列表失败', error);
+                        this.$message.error('加载公告列表失败，请检查网络连接');
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    });
+            },
+            refreshData() {
+                this.searchKeyword = '';
+                this.currentPage = 1;
+                this.loadNotices();
+            },
+            handleSearch() {
+                this.currentPage = 1;
+            },
+            handleSizeChange(val) {
+                this.pageSize = val;
+                this.currentPage = 1;
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+            },
+            handleAdd() {
+                this.dialogTitle = '发布新公告';
+                this.form = {
+                    id: null,
+                    title: '',
+                    publisher: '',
+                    content: '',
+                    publishDate: this.formatNow(),
+                    photoUrl: ''
+                };
+                this.dialogVisible = true;
+                this.$nextTick(() => {
+                    if (this.$refs.form) {
+                        this.$refs.form.clearValidate();
+                    }
+                });
+            },
+            handleEdit(row) {
+                this.dialogTitle = '编辑公告';
+                this.form = {
+                    id: row.id,
+                    title: row.title,
+                    publisher: row.publisher,
+                    content: row.content,
+                    publishDate: row.publishDate,
+                    photoUrl: row.photoUrl || ''
+                };
+                this.dialogVisible = true;
+                this.$nextTick(() => {
+                    if (this.$refs.form) {
+                        this.$refs.form.clearValidate();
+                    }
+                });
+            },
+            handleDelete(id) {
+                this.$confirm('确定要删除这条公告吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete('/api/notice/delete/' + id)
+                        .then(response => {
+                            if (response.data.code === 200) {
+                                this.$message.success('删除成功');
+                                this.loadNotices();
+                            } else {
+                                this.$message.error('删除失败：' + response.data.msg);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('删除失败', error);
+                            this.$message.error('删除失败，请检查网络连接');
+                        });
+                }).catch(() => {});
+            },
+            submitForm() {
+                this.$refs.form.validate(valid => {
+                    if (!valid) {
+                        return;
+                    }
+
+                    this.submitting = true;
+                    const isEdit = !!this.form.id;
+
+                    axios({
+                        method: isEdit ? 'put' : 'post',
+                        url: isEdit ? '/api/notice/update' : '/api/notice/add',
+                        data: this.form
+                    }).then(response => {
+                        if (response.data.code === 200) {
+                            this.$message.success(isEdit ? '更新成功' : '发布成功');
+                            this.dialogVisible = false;
+                            this.loadNotices();
+                        } else {
+                            this.$message.error('操作失败：' + response.data.msg);
+                        }
+                    }).catch(error => {
+                        console.error('操作失败', error);
+                        this.$message.error('操作失败，请检查网络连接');
+                    }).finally(() => {
+                        this.submitting = false;
+                    });
+                });
+            },
+            resetForm() {
+                if (this.$refs.form) {
+                    this.$refs.form.resetFields();
+                }
+            },
+            formatNow() {
+                const date = new Date();
+                const pad = num => String(num).padStart(2, '0');
+                return date.getFullYear() + '-' +
+                    pad(date.getMonth() + 1) + '-' +
+                    pad(date.getDate()) + ' ' +
+                    pad(date.getHours()) + ':' +
+                    pad(date.getMinutes()) + ':' +
+                    pad(date.getSeconds());
+            }
+        }
+    });
+</script>
+</body>
+</html>
