@@ -35,3 +35,18 @@ logs/
 
 # Upload temp
 uploads/
+
+# Ecommerce third-party libraries
+ecommerce-platform/web/WEB-INF/lib/
+ecommerce-platform/web/picture/
+ecommerce-platform/web/images/
+ecommerce-platform/web/fonts/
+ecommerce-platform/web/js/theme/
+ecommerce-platform/web/js/bootstrap.min.js
+ecommerce-platform/web/js/jquery.flexslider.js
+ecommerce-platform/web/js/jquery.min.js
+ecommerce-platform/web/js/layer.js
+ecommerce-platform/web/layer/
+ecommerce-platform/web/css/bootstrap.css
+ecommerce-platform/web/css/flexslider.css
+ecommerce-platform/web/WEB-INF/classes/
